@@ -1,162 +1,89 @@
 [
-    {
-        "id": 1,
-        "title": "Dell XPS 15 9570 laptop (4K touch, GTX 1050 Ti)",
-        "price": 450.0,
-        "category": "Electronics",
-        "sellers": [
-            "Dell"
-        ],
-        "description": "Dell XPS 15 9570, bought new January 2019. Intel i7-8750H, 16GB RAM, 512GB SSD, 4K touch display, GTX 1050 Ti. Includes original charger and USB-C dongle. Works flawlessly; minor scuffs on the lid.<br/><br/>🔗 <a href=\"https://www.dell.com/en-us/shop/dell-laptops/xps-15/spd/xps-15-9570-laptop\" target=\"_blank\">Official Dell product page</a> · <a href=\"https://www.notebookcheck.net/Dell-XPS-15-9570-i7-8750H-FHD-4K-GTX-1050-Ti-Review.410247.0.html\" target=\"_blank\">Notebookcheck review</a>",
-        "images": [
-            "xps1.jpg",
-            "xps2.jpg",
-            "xps3.jpg",
-            "xps4.jpg"
-        ],
-        "link": "https://www.dell.com/en-us/shop/dell-laptops/xps-15/spd/xps-15-9570-laptop",
-        "dateAdded": "2026-01-15",
-        "priority": 5,
-        "bought": false
+  {
+    "id": 1,
+    "title": "Laptop Scherm",
+    "price": {
+      "type": "range",
+      "min": 80,
+      "max": 120
     },
-    {
-        "id": 2,
-        "title": "Labgrey T1 2-in-1 folding treadmill",
-        "price": 130.0,
-        "category": "Sports",
-        "sellers": [
-            "Amazon",
-            "Labgrey"
-        ],
-        "description": "Labgrey T1 2-in-1 folding treadmill. Handrail down design for under-desk use, or upright for walking/running. Quiet motor, speed up to 12 km/h. Used only a few times — perfect condition, all original packaging.<br/><br/>More info: <a href=\"https://www.labgrey.com/t1-treadmill\" target=\"_blank\">Labgrey T1</a> · <a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\" target=\"_blank\">Video demo</a>",
-        "images": [
-            "tread1.jpg",
-            "tread2.jpg",
-            "tread3.jpg"
-        ],
-        "link": "https://www.labgrey.com/t1-treadmill",
-        "dateAdded": "2026-01-12",
-        "priority": 4,
-        "bought": false
+    "category": "",
+    "sellers": ["AliExpress", "Ebay"],
+    "description": "Het gaat om de MSI Raider GE66 10SGS laptop. Dit scherm en de deksel zijn gebroken. <br/><br/>1920p x 1080p<br/>240Hz <br/>FHD IPS <br/>240Hz <br/>15.6inch <br/>non-touch screen <br/>40pin connector <br/><br/>🔗 <a href=\"https://www.ebay.com/itm/267236183449\" target=\"_blank\">Ebay</a> · <a href=\"https://fr.aliexpress.com/item/1005011979438099.html\" target=\"_blank\">Aliexpress 1</a> · <a href=\"https://fr.aliexpress.com/item/1005006384128735.html\" target=\"_blank\">Aliexpress 2</a> · <a href=\"https://fr.aliexpress.com/item/1005009123121205.html\" target=\"_blank\">Aliexpress 3</a>",
+    "images": [
+      "GE66_Raider_LCD.jpg",
+      "GE66_Raider_Requirements.jpg",
+      "GE66_Raider_Connector.jpg",
+      "GE66_Raider.jpg"
+    ],
+    "links": [
+      { "title": "MSI Specification", "url": "https://www.msi.com/Laptop/GE66-Raider-10SX/Specification" }
+    ],
+    "dateAdded": "2026-01-20",
+    "priority": 5,
+    "bought": false
+  },
+  {
+    "id": 2,
+    "title": "Laptop Deksel",
+    "price": {
+      "type": "range",
+      "min": 30,
+      "max": 50
     },
-    {
-        "id": 3,
-        "title": "Scrapper hybrid bike (CR7, step-through frame)",
-        "price": 120.0,
-        "category": "Sports",
-        "sellers": [
-            "Decathlon"
-        ],
-        "description": "Scrapper hybrid/city bike with low-step \"wave\" frame. 7-speed gears, comfortable upright position, 28\" wheels. Includes rear rack and lights. Some cosmetic scratches but mechanically sound — great for commuting.<br/><br/>Check <a href=\"https://www.scrapper-bikes.com/cr7-hybrid\" target=\"_blank\">manufacturer specs</a> and <a href=\"https://www.bikeradar.com/reviews/scrapper-cr7/\" target=\"_blank\">BikeRadar review</a>.",
-        "images": [
-            "bike1.jpg",
-            "bike2.jpg",
-            "bike3.jpg"
-        ],
-        "link": "https://www.scrapper-bikes.com/cr7-hybrid",
-        "dateAdded": "2026-01-10",
-        "priority": 3,
-        "bought": false
+    "category": "",
+    "sellers": ["AliExpress"],
+    "description": "Het gaat om de MSI Raider GE66 10SGS laptop. Deze deksel en het scherm zijn gebroken. <br/><br/>\uD83D\uDD17 <a href=\"https://fr.aliexpress.com/item/1005012422315309.html\" target=\"_blank\">Aliexpress 1</a> · <a href=\"https://fr.aliexpress.com/item/1005010763675545.html\" target=\"_blank\">Aliexpress 2</a> · <a href=\"https://fr.aliexpress.com/item/1005012741733299.html\" target=\"_blank\">Aliexpress 3</a> · <a href=\"https://fr.aliexpress.com/item/1005012427215467.html\" target=\"_blank\">Aliexpress 4</a>",
+    "images": ["GE66_Raider_Lid.jpg","GE66_Raider_Color.jpg","GE66_Raider_Lid2.jpg"],
+    "links": [
+      { "title": "MSI Specification", "url": "https://www.msi.com/Laptop/GE66-Raider-10SX/Specification" }
+    ],
+    "dateAdded": "2026-01-12",
+    "priority": 4,
+    "bought": false
+  },
+  {
+    "id": 3,
+    "title": "Speed Pedelec",
+    "price": {
+      "type": "estimate",
+      "value": 700
     },
-    {
-        "id": 4,
-        "title": "Sony WH-1000XM3 noise-cancelling headphones",
-        "price": 120.0,
-        "category": "Electronics",
-        "sellers": [
-            "Amazon",
-            "Sony"
-        ],
-        "description": "Sony WH-1000XM3 over-ear noise-cancelling headphones. Industry-leading ANC, 30-hour battery, LDAC support. Includes carrying case, USB-C cable, and 3.5mm audio cable. Earpads show slight wear but work perfectly.<br/><br/>🔊 <a href=\"https://www.sony.com/electronics/headband-headphones/wh-1000xm3\" target=\"_blank\">Sony official</a> · <a href=\"https://www.rtings.com/headphones/reviews/sony/wh-1000xm3\" target=\"_blank\">RTings review</a>",
-        "images": [
-            "sony1.jpg",
-            "sony2.jpg",
-            "sony3.jpg"
-        ],
-        "link": "https://www.sony.com/electronics/headband-headphones/wh-1000xm3",
-        "dateAdded": "2026-01-08",
-        "priority": 2,
-        "bought": false
+    "category": "Birthday",
+    "sellers": ["Decathlon"],
+    "description": "Snelle sportieve elektrische fiets, die lekker snel kan.",
+    "images": ["Speed_Pedelec.jpg"],
+
+    "dateAdded": "2025-09-15",
+    "priority": 2,
+    "bought": false
+  },
+  {
+    "id": 4,
+    "title": "Hardeschijf 24TB",
+    "price": {
+      "type": "estimate",
+      "value": 700
     },
-    {
-        "id": 5,
-        "title": "Atomic C-Series 5.2 skis (158 cm) + poles",
-        "price": 35.0,
-        "category": "Sports",
-        "sellers": [
-            "Atomic"
-        ],
-        "description": "Atomic C-Series 5.2 skis, 158 cm length, with bindings (DIN 3–10). Includes matching poles. Good all-mountain skis for intermediate to advanced skiers. Some scratches on the base but no major damage — freshly waxed.<br/><br/>See <a href=\"https://www.atomic.com/en-us/shop/product/c-series-5-2.html\" target=\"_blank\">product page</a> and <a href=\"https://www.skireviews.com/atomic-c-series-5-2\" target=\"_blank\">ski reviews</a>.",
-        "images": [
-            "skis1.jpg",
-            "skis2.jpg",
-            "skis3.jpg"
-        ],
-        "link": "https://www.atomic.com/en-us/shop/product/c-series-5-2.html",
-        "dateAdded": "2026-01-05",
-        "priority": 3,
-        "bought": false
-    },
-    {
-        "id": 6,
-        "title": "Nordica NFS ski boots — size EU 42",
-        "price": 35.0,
-        "category": "Sports",
-        "sellers": [
-            "SnowInn",
-            "Nordica"
-        ],
-        "description": "Nordica NFS ski boots, Comfort Fit liner. Size EU 42 (mondo 27.0). 100 flex, suitable for intermediate to advanced skiers. Shell in good condition, liners have been heat-molded once. Includes original box.<br/><br/>📦 <a href=\"https://www.nordica.com/en-us/shop/ski-boots/nfs\" target=\"_blank\">Nordica official</a> · <a href=\"https://www.snowinn.com/ski-store/nordica-nfs-ski-boots/\" target=\"_blank\">SnowInn listing</a>",
-        "images": [
-            "boots1.jpg",
-            "boots2.jpg",
-            "boots3.jpg"
-        ],
-        "link": "https://www.nordica.com/en-us/shop/ski-boots/nfs",
-        "dateAdded": "2026-01-03",
-        "priority": 2,
-        "bought": false
-    },
-    {
-        "id": 7,
-        "title": "BenQ GW2270 21.5\" Full HD monitor",
-        "price": 35.0,
-        "category": "Electronics",
-        "sellers": [
-            "Amazon",
-            "BenQ"
-        ],
-        "description": "BenQ GW2270 21.5\" 1920x1080 VA panel monitor. 60Hz, 5ms response time, VESA mountable. Includes stand, power cable, and HDMI cable. Excellent for office work or as a secondary display — no dead pixels.<br/><br/>🔎 <a href=\"https://www.benq.com/en-us/monitor/gw2270.html\" target=\"_blank\">BenQ page</a> · <a href=\"https://www.pcmag.com/reviews/benq-gw2270\" target=\"_blank\">PCMag review</a>",
-        "images": [
-            "monitor1.jpg",
-            "monitor2.jpg",
-            "monitor3.jpg"
-        ],
-        "link": "https://www.benq.com/en-us/monitor/gw2270.html",
-        "dateAdded": "2026-01-01",
-        "priority": 1,
-        "bought": true,
-        "dateBought": "2026-09-03"
-    },
-    {
-        "id": 8,
-        "title": "Logitech C615 HD webcam",
-        "price": 25.0,
-        "category": "Electronics",
-        "sellers": [
-            "Amazon",
-            "Logitech"
-        ],
-        "description": "Logitech C615 HD webcam, 1080p video capture, fold-and-go clip design. Built-in microphone, autofocus, and light correction. Works with USB-A. Used sparingly, in like-new condition with original packaging.<br/><br/>📷 <a href=\"https://www.logitech.com/en-us/products/webcams/c615-hd-webcam.html\" target=\"_blank\">Logitech official</a> · <a href=\"https://www.amazon.com/dp/B004YW7W4O\" target=\"_blank\">Amazon listing</a>",
-        "images": [
-            "webcam1.jpg",
-            "webcam2.jpg",
-            "webcam3.jpg"
-        ],
-        "link": "https://www.logitech.com/en-us/products/webcams/c615-hd-webcam.html",
-        "dateAdded": "2025-12-28",
-        "priority": 4,
-        "bought": true,
-        "dateBought": "2026-09-02"
-    }
+    "category": "",
+    "sellers": ["Amazon"],
+    "description": "24TB HDD van minstens de merken: <br/>Seagate<br/>Western Digital<br/>",
+    "images": ["hdd.jpg", "hdd_wd.jpg", "hdd_seagate.png"],
+    "dateAdded": "2026-09-05",
+    "priority": 4,
+    "bought": false
+  },
+  {
+    "id": 5,
+    "title": "Anbernic RG35xxSP",
+    "price": 75.0,
+    "category": "Birthday",
+    "sellers": ["Anbernic"],
+    "description": "Retro Handheld",
+    "images": ["handheld.jpg"],
+    "dateAdded": "2026-04-23",
+    "dateBought": "2026-04-23",
+    "priority": 4,
+    "bought": true
+  }
 ]

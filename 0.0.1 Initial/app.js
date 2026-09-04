@@ -1,8 +1,7 @@
 /**
  * app.js — Wishlist catalog
  * Fully data-driven: filters and labels are derived from the JSON data.
- * Supports local images, priority rating, "bought" state, multiple links
- * in description, and flexible fixed/range/estimated prices.
+ * Supports local images, priority rating, "bought" state, and multiple links in description.
  */
 
 // ----- STATE ------------------------------------------------------------
@@ -41,102 +40,46 @@ function updateCategoryInURL(category) {
         url.searchParams.set('category', category);
     }
 
+    // Keep the shareable URL in sync without reloading the page.
     window.history.replaceState({}, '', url);
 }
 
 function applyCategoryFromURL() {
     const requestedCategory = getCategoryFromURL();
-
     if (!requestedCategory) {
         activeCategory = 'all';
         return;
     }
 
+    // Match case-insensitively, but keep the category spelling from data.json.
     const categories = getUniqueValues('category');
-
-    const matchedCategory = categories.find(category => category.toLowerCase() === requestedCategory.toLowerCase());
+    const matchedCategory = categories.find(
+        category => category.toLowerCase() === requestedCategory.toLowerCase()
+    );
 
     activeCategory = matchedCategory || 'all';
 
-    if (matchedCategory) {
-        updateCategoryInURL(matchedCategory);
-    }
-}
-
-
-// ----- PRICE HELPERS --------------------------------------------------
-
-function normalizePrice(price) {
-    if (typeof price === 'number') {
-        return {type: 'fixed', value: price};
-    }
-
-    if (!price || typeof price !== 'object') {
-        return {type: 'fixed', value: 0};
-    }
-
-    const type = price.type || 'fixed';
-
-    if (type === 'range' || type === 'estimate-range') {
-        return {
-            type, min: Number(price.min) || 0, max: Number(price.max) || 0
-        };
-    }
-
-    return {type, value: Number(price.value) || 0};
-}
-
-function getPriceSortValue(price) {
-    const normalized = normalizePrice(price);
-
-    if (normalized.type === 'range' || normalized.type === 'estimate-range') {
-        return (normalized.min + normalized.max) / 2;
-    }
-
-    return normalized.value;
+    // Normalize a valid URL to the exact category spelling used by the data.
+    if (matchedCategory) updateCategoryInURL(matchedCategory);
 }
 
 function formatPrice(price) {
-    const normalized = normalizePrice(price);
-
-    const formatEuro = value => '€ ' + Number(value).toFixed(2);
-
-    switch (normalized.type) {
-        case 'range':
-            return `${formatEuro(normalized.min)} – ${formatEuro(normalized.max)}`;
-        case 'estimate':
-            return `± ${formatEuro(normalized.value)}`;
-        case 'estimate-range':
-            return `± ${formatEuro(normalized.min)} – ${formatEuro(normalized.max)}`;
-        case 'fixed':
-        default:
-            return formatEuro(normalized.value);
-    }
+    return '€ ' + price.toFixed(2);
 }
-
-
-// ----- DATE HELPERS ---------------------------------------------------
 
 function parseLocalDate(dateString) {
     if (!dateString) return null;
-
     const parts = dateString.split('-').map(Number);
-
-    if (parts.length !== 3 || parts.some(Number.isNaN)) {
-        return null;
-    }
-
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
     return new Date(parts[0], parts[1] - 1, parts[2]);
 }
 
 function formatBoughtDate(dateString) {
     const boughtDate = parseLocalDate(dateString);
-
     if (!boughtDate) return 'Bought';
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
     boughtDate.setHours(0, 0, 0, 0);
 
     const diffDays = Math.round((today - boughtDate) / 86400000);
@@ -148,21 +91,17 @@ function formatBoughtDate(dateString) {
     const day = String(boughtDate.getDate()).padStart(2, '0');
     const month = String(boughtDate.getMonth() + 1).padStart(2, '0');
     const year = boughtDate.getFullYear();
-
     return `Bought ${day}/${month}/${year}`;
 }
 
 function getPriorityStars(priority) {
     if (!priority) return '';
-
     const full = Math.min(5, Math.max(0, Math.round(priority)));
-
     return '★'.repeat(full) + '☆'.repeat(5 - full);
 }
 
 function getEmojiForItem(title) {
     const lower = title.toLowerCase();
-
     if (lower.includes('laptop') || lower.includes('xps')) return '💻';
     if (lower.includes('treadmill')) return '🏃';
     if (lower.includes('bike') || lower.includes('scrapper')) return '🚲';
@@ -171,33 +110,32 @@ function getEmojiForItem(title) {
     if (lower.includes('boot')) return '🥾';
     if (lower.includes('monitor')) return '🖥️';
     if (lower.includes('webcam')) return '📷';
-
     return '📦';
 }
 
-
-// ----- Sanitize HTML --------------------------------------------------
-
+// ----- Sanitize HTML (allow only safe tags and attributes) -------------
 function sanitizeHTML(html) {
+    // Use a DOMParser to parse and walk the tree
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, 'text/html');
     const body = doc.body;
 
+    // Allowed tags and their allowed attributes
     const allowedTags = ['a', 'p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'b', 'i', 'sub', 'sup'];
-
     const allowedAttrs = {
         'a': ['href', 'target', 'rel', 'title']
     };
 
     function cleanNode(node) {
         if (node.nodeType === Node.TEXT_NODE) {
+            // keep text
             return node.cloneNode();
         }
 
         if (node.nodeType === Node.ELEMENT_NODE) {
             const tagName = node.tagName.toLowerCase();
-
             if (!allowedTags.includes(tagName)) {
+                // Replace with a span or just keep children
                 const span = document.createElement('span');
                 node.childNodes.forEach(child => {
                     const cleaned = cleanNode(child);
@@ -207,7 +145,7 @@ function sanitizeHTML(html) {
             }
 
             const newNode = document.createElement(tagName);
-
+            // Copy allowed attributes
             if (tagName === 'a') {
                 const attrs = allowedAttrs['a'];
                 attrs.forEach(attr => {
@@ -215,24 +153,25 @@ function sanitizeHTML(html) {
                         newNode.setAttribute(attr, node.getAttribute(attr));
                     }
                 });
-
+                // Ensure target="_blank" for security
                 if (!newNode.hasAttribute('target')) {
                     newNode.setAttribute('target', '_blank');
                 }
                 if (!newNode.hasAttribute('rel')) {
                     newNode.setAttribute('rel', 'noopener noreferrer');
                 }
+            } else {
+                // Copy only common safe attributes like class, style? we can skip for simplicity
+                // We'll keep only id or class if we want, but we won't to keep it clean
             }
 
             node.childNodes.forEach(child => {
                 const cleaned = cleanNode(child);
                 if (cleaned) newNode.appendChild(cleaned);
             });
-
             return newNode;
         }
-
-        return null;
+        return null; // other node types ignored
     }
 
     const cleanedBody = document.createElement('div');
@@ -240,63 +179,43 @@ function sanitizeHTML(html) {
         const cleaned = cleanNode(child);
         if (cleaned) cleanedBody.appendChild(cleaned);
     });
-
     return cleanedBody.innerHTML;
 }
 
-
-// ----- extract unique values from data -------------------------------
-
+// ----- extract unique values from data ---------------------------------
 function getUniqueValues(key) {
     const values = new Set();
-
     items.forEach(item => {
         const value = item[key];
-
         if (Array.isArray(value)) {
             value.forEach(v => {
-                if (v && v.trim() !== '') {        // skip empty strings
-                    values.add(v);
-                }
+                if (v) values.add(v);
             });
-        } else if (value && value.trim() !== '') { // skip empty strings
+        } else if (value) {
             values.add(value);
         }
     });
-
     return Array.from(values).sort();
 }
 
-
-// ----- build filter buttons -------------------------------------------
-
+// ----- build filter buttons --------------------------------------------
 function buildFilterButtons(container, filterKey, activeValue) {
     const values = getUniqueValues(filterKey);
-
     const allActive = activeValue === 'all' ? 'active' : '';
-
-    let html = `
-        <button class="filter-btn ${allActive}" data-filter="${filterKey}" data-value="all">
-            All
-        </button>
-    `;
-
+    let html = `<button class="filter-btn ${allActive}" data-filter="${filterKey}" data-value="all">All</button>`;
     values.forEach(val => {
         const isActive = activeValue === val ? 'active' : '';
-        html += `
-            <button class="filter-btn ${isActive}" data-filter="${filterKey}" data-value="${val}">
-                ${val}
-            </button>
-        `;
+        html += `<button class="filter-btn ${isActive}" data-filter="${filterKey}" data-value="${val}">${val}</button>`;
     });
-
     container.innerHTML = html;
 
+    // attach click events
     container.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const key = btn.dataset.filter;
             const value = btn.dataset.value;
 
+            // remove active from siblings
             container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
@@ -306,15 +225,12 @@ function buildFilterButtons(container, filterKey, activeValue) {
             } else if (key === 'sellers') {
                 activeSeller = value;
             }
-
             applyFiltersAndSort();
         });
     });
 }
 
-
 // ----- render grid ----------------------------------------------------
-
 function renderGrid() {
     if (filteredItems.length === 0) {
         grid.innerHTML = `<div class="empty-state">✨ No items match your filters</div>`;
@@ -329,43 +245,44 @@ function renderGrid() {
     for (const item of filteredItems) {
         const isBought = item.bought === true;
 
+        // Force bought items onto a fresh grid row, with a subtle visual break.
         if (isBought && hasRenderedAvailableItem && !boughtSectionStarted) {
-            html += `<div class="bought-row-break" aria-hidden="true"></div>`;
+            html += '<div class="bought-row-break" aria-hidden="true"></div>';
             boughtSectionStarted = true;
         }
 
         if (!isBought) hasRenderedAvailableItem = true;
-
         const firstImg = item.images && item.images.length > 0 ? item.images[0] : '';
         const emoji = getEmojiForItem(item.title);
         const priorityStars = getPriorityStars(item.priority);
-        const priceDisplay = formatPrice(item.price);
-
+        // Build card
         let cardClasses = 'item-card';
         if (isBought) cardClasses += ' bought';
 
         html += `
-            <div class="${cardClasses}" data-id="${item.id}" role="listitem">
-                ${isBought ? `<div class="bought-ribbon"><span>${formatBoughtDate(item.dateBought)}</span></div>` : ''}
-                <div class="card-image">
-                    ${firstImg ? `<img src="${firstImg}" alt="${item.title}" loading="lazy" />` : `<span style="font-size:56px;">${emoji}</span>`}
-                </div>
-                <div class="card-body">
-                    <div class="card-title">${item.title}</div>
-                    <div class="card-price">${priceDisplay}</div>
-                    <div class="card-labels">
-                        ${item.priority ? `<span class="label priority">${priorityStars}</span>` : ''}
-    ${item.category && item.category.trim() !== '' ? `<span class="label category">${item.category}</span>` : ''}
+                <div class="${cardClasses}" data-id="${item.id}" role="listitem">
+                    ${isBought ? `<div class="bought-ribbon"><span>${formatBoughtDate(item.dateBought)}</span></div>` : ''}
+                    <div class="card-image">
+                        ${firstImg ? `<img src="${firstImg}" alt="${item.title}" loading="lazy" />` : `<span style="font-size:56px;">${emoji}</span>`}
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-price">${formatPrice(item.price)}</div>
+                        <div class="card-labels">
+                            <span class="label category">${item.category}</span>
+                            ${(item.sellers || []).map(seller => `<span class="label seller">${seller}</span>`).join('')}
+                            ${item.priority ? `<span class="label priority">${priorityStars}</span>` : ''}
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
     }
 
     grid.innerHTML = html;
     resultsCount.textContent = `Showing ${filteredItems.length} items`;
     totalCount.textContent = items.length;
 
+    // attach click listeners to cards
     document.querySelectorAll('.item-card').forEach(card => {
         card.addEventListener('click', () => {
             const id = parseInt(card.dataset.id);
@@ -374,40 +291,38 @@ function renderGrid() {
     });
 }
 
-
 // ----- filtering & sorting --------------------------------------------
-
 function applyFiltersAndSort() {
+    // First filter by category and seller
     let result = [...items];
 
     if (activeCategory !== 'all') {
         result = result.filter(item => item.category === activeCategory);
     }
-
     if (activeSeller !== 'all') {
         result = result.filter(item => (item.sellers || []).includes(activeSeller));
     }
 
+    // Split into active and bought
     const activeItems = result.filter(item => !item.bought);
     const boughtItems = result.filter(item => item.bought === true);
 
+    // Sort each group according to current sort
     const sortFn = getSortFunction(currentSort);
     activeItems.sort(sortFn);
     boughtItems.sort(sortFn);
 
+    // Concatenate: active first, then bought
     filteredItems = [...activeItems, ...boughtItems];
     renderGrid();
 }
 
-
-// ----- sorting --------------------------------------------------------
-
 function getSortFunction(sortKey) {
     switch (sortKey) {
         case 'price-asc':
-            return (a, b) => getPriceSortValue(a.price) - getPriceSortValue(b.price);
+            return (a, b) => a.price - b.price;
         case 'price-desc':
-            return (a, b) => getPriceSortValue(b.price) - getPriceSortValue(a.price);
+            return (a, b) => b.price - a.price;
         case 'date-asc':
             return (a, b) => new Date(a.dateAdded) - new Date(b.dateAdded);
         case 'priority-desc':
@@ -418,30 +333,26 @@ function getSortFunction(sortKey) {
     }
 }
 
-
 // ----- modal ----------------------------------------------------------
-
 function openModal(id) {
     const item = items.find(i => i.id === id);
     if (!item) return;
 
     currentItemId = id;
-
     const images = item.images || [];
     const priorityStars = getPriorityStars(item.priority);
     const isBought = item.bought === true;
-    const priceDisplay = formatPrice(item.price);
 
-    // Build gallery thumbnails
+    // build gallery thumbnails
     let thumbsHtml = '';
     if (images.length > 0) {
         images.forEach((img, i) => {
             const activeClass = i === 0 ? 'active' : '';
             thumbsHtml += `
-                <div class="thumb ${activeClass}" data-index="${i}">
-                    <img src="${img}" alt="${item.title} — image ${i + 1}" />
-                </div>
-            `;
+                    <div class="thumb ${activeClass}" data-index="${i}">
+                        <img src="${img}" alt="${item.title} — image ${i+1}" />
+                    </div>
+                `;
         });
     } else {
         thumbsHtml = '<span style="font-size:14px;color:#94a3b8;">No additional images</span>';
@@ -449,60 +360,48 @@ function openModal(id) {
 
     const boughtLabel = isBought ? `<span class="label bought-status">${formatBoughtDate(item.dateBought)}</span>` : '';
 
+    // Sanitize description to allow safe HTML (links, etc.)
     const safeDescription = item.description ? sanitizeHTML(item.description) : 'No description available.';
 
-    // Build links section from `item.links` array (backward compatible with `item.link`)
-    let linksHtml = '';
-    const links = item.links || (item.link ? [{title: 'View product page', url: item.link}] : []);
-
-    if (links.length > 0) {
-        linksHtml = `
-            <div class="modal-links">
-                ${links.map(link => `
-                    <a href="${link.url}" target="_blank" rel="noopener noreferrer">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                            <polyline points="15 3 21 3 21 9" />
-                            <line x1="10" y1="14" x2="21" y2="3" />
-                        </svg>
-                        ${link.title}
-                    </a>
-                `).join('')}
-            </div>
-        `;
-    }
-
     modalContent.innerHTML = `
-        <div class="modal-gallery">
-            <div class="main-image" id="modalMainImage">
-                <img src="${images.length > 0 ? images[0] : ''}" alt="${item.title}" />
+            <div class="modal-gallery">
+                <div class="main-image" id="modalMainImage">
+                    <img src="${images.length > 0 ? images[0] : ''}" alt="${item.title}" />
+                </div>
+                <div class="thumbnails" id="modalThumbnails">
+                    ${thumbsHtml}
+                </div>
             </div>
-            <div class="thumbnails" id="modalThumbnails">
-                ${thumbsHtml}
-            </div>
-        </div>
 
-        <div class="modal-title">${item.title}</div>
-        <div class="modal-price">${priceDisplay}</div>
+            <div class="modal-title">${item.title}</div>
+            <div class="modal-price">${formatPrice(item.price)}</div>
 
-        <div class="modal-meta">
             <div class="modal-meta">
+                <span class="label category">${item.category}</span>
+                ${(item.sellers || []).map(seller => `<span class="label seller">${seller}</span>`).join('')}
                 ${item.priority ? `<span class="label priority">${priorityStars}</span>` : ''}
-                ${item.category && item.category.trim() !== '' ? `<span class="label category">${item.category}</span>` : ''}
                 ${boughtLabel}
             </div>
-        </div>
 
-        <div class="modal-description">${safeDescription}</div>
+            <div class="modal-description">${safeDescription}</div>
 
-        ${linksHtml}
-    `;
+            <div class="modal-link">
+                <a href="${item.link || '#'}" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    View product page
+                </a>
+            </div>
+        `;
 
-    // Thumbnail click handling
+    // thumbnail click handling
     const thumbs = modalContent.querySelectorAll('.thumb');
     const mainImg = modalContent.querySelector('#modalMainImage img');
 
-    thumbs.forEach(thumb => {
+    thumbs.forEach((thumb) => {
         thumb.addEventListener('click', () => {
             thumbs.forEach(t => t.classList.remove('active'));
             thumb.classList.add('active');
@@ -521,45 +420,35 @@ function closeModal() {
     currentItemId = null;
 }
 
-
 // ----- load data from JSON --------------------------------------------
-
 async function loadData() {
     try {
         const response = await fetch('data.json');
         if (!response.ok) throw new Error('Failed to load data.json');
         items = await response.json();
 
+        // ensure each item has an id, images array, dateAdded, bought default, and optional dateBought
         items.forEach((item, index) => {
             if (!item.id) item.id = index + 1;
             if (!item.images) item.images = [];
             if (!item.dateAdded) item.dateAdded = new Date().toISOString().split('T')[0];
             if (item.bought === undefined) item.bought = false;
             if (!item.bought) item.dateBought = null;
-
-            // Sellers
+            // sellers can contain one or more labels; normalize legacy/string values to an array
             if (!item.sellers) item.sellers = [];
             if (!Array.isArray(item.sellers)) item.sellers = [item.sellers];
-
-            // Price
-            item.price = normalizePrice(item.price);
-
-            // Images
+            // prepend "images/" to each image filename (if not already a URL)
             item.images = item.images.map(img => img.startsWith('http') || img.startsWith('data:') ? img : `images/${img}`);
-
-            // Links: ensure `links` array exists; backward compatibility with `link`
-            if (!item.links && item.link) {
-                item.links = [{title: 'View product page', url: item.link}];
-            } else if (!item.links) {
-                item.links = [];
-            }
         });
 
+        // Apply a shareable category from the URL, e.g. ?category=Electronics
         applyCategoryFromURL();
 
+        // build dynamic filters
         buildFilterButtons(categoryFiltersContainer, 'category', activeCategory);
         buildFilterButtons(sellerFiltersContainer, 'sellers', activeSeller);
 
+        // initial render
         applyFiltersAndSort();
 
     } catch (error) {
@@ -568,40 +457,44 @@ async function loadData() {
     }
 }
 
-
 // ----- event listeners ------------------------------------------------
-
+// sort select
 sortSelect.addEventListener('change', () => {
     currentSort = sortSelect.value;
     applyFiltersAndSort();
 });
 
+// clear filters
 clearFiltersBtn.addEventListener('click', () => {
+    // reset category
     categoryFiltersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     const allCat = categoryFiltersContainer.querySelector('.filter-btn[data-value="all"]');
     if (allCat) allCat.classList.add('active');
     activeCategory = 'all';
     updateCategoryInURL(activeCategory);
 
+    // reset seller
     sellerFiltersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     const allSeller = sellerFiltersContainer.querySelector('.filter-btn[data-value="all"]');
     if (allSeller) allSeller.classList.add('active');
     activeSeller = 'all';
 
+    // reset sort
     sortSelect.value = 'date-desc';
     currentSort = 'date-desc';
 
     applyFiltersAndSort();
 });
 
+// modal close
 modalClose.addEventListener('click', closeModal);
-modalOverlay.addEventListener('click', e => {
+modalOverlay.addEventListener('click', (e) => {
     if (e.target === modalOverlay) closeModal();
 });
-document.addEventListener('keydown', e => {
+
+document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
 });
 
 // ----- init -----------------------------------------------------------
-
 document.addEventListener('DOMContentLoaded', loadData);

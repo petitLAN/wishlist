@@ -72,6 +72,7 @@ body {
     gap: 20px;
 }
 
+/* Full-width break that keeps purchased items on their own row. */
 .bought-row-break {
     grid-column: 1 / -1;
     height: 1px;
@@ -99,6 +100,7 @@ body {
     border-color: #e2e8f0;
 }
 
+/* ----- bought state ----- */
 .item-card.bought {
     opacity: 1;
     border-color: #d1d5db;
@@ -120,6 +122,9 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
+/* Diagonal SOLD-style ribbon for purchased wishlist items.
+   Oversized on purpose so it crosses the whole article frame and leaves
+   enough room for longer date wording such as “BOUGHT TWO DAYS AGO”. */
 .item-card .bought-ribbon {
     position: absolute;
     top: 48%;
@@ -129,7 +134,7 @@ body {
     background: #ef4444;
     color: #fff;
     text-align: center;
-    transform: translate(-50%, -50%) rotate(-35deg);
+    transform: translate(-50%, -50%) rotate(-27deg);
     transform-origin: center;
     box-shadow: 0 3px 10px rgba(127, 29, 29, 0.24);
     z-index: 3;
@@ -139,13 +144,15 @@ body {
 .item-card .bought-ribbon span {
     display: block;
     width: 100%;
-    padding: 0 20px;
-    font-size: 12px;
+    padding: 0 18px;
+    font-size: 10.5px;
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.055em;
     white-space: nowrap;
-    line-height: 1.4;
+    border-top: 1px solid rgba(255, 255, 255, 0.55);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+    line-height: 1.75;
 }
 
 .item-card .card-image {
@@ -181,20 +188,13 @@ body {
     font-weight: 600;
     line-height: 1.3;
     color: #0f172a;
-
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-
-    /* Reserve space for two lines */
-    min-height: 39px;   /* 2 lines × 15px × 1.3 line-height */
 }
 
 .item-card .card-price {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     font-size: 20px;
     font-weight: 700;
     color: #0f172a;
@@ -202,9 +202,6 @@ body {
 }
 
 .item-card .card-price small {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     font-size: 14px;
     font-weight: 400;
     color: #94a3b8;
@@ -249,6 +246,7 @@ body {
     gap: 2px;
 }
 
+/* empty state */
 .empty-state {
     grid-column: 1 / -1;
     text-align: center;
@@ -497,7 +495,6 @@ body {
 }
 
 .modal .modal-price {
-    white-space: nowrap;
     font-size: 28px;
     font-weight: 700;
     color: #0f172a;
@@ -505,7 +502,6 @@ body {
 }
 
 .modal .modal-price small {
-    white-space: nowrap;
     font-size: 16px;
     font-weight: 400;
     color: #94a3b8;
@@ -534,6 +530,11 @@ body {
     color: #1d4ed8;
 }
 
+.modal .modal-meta .label.seller {
+    background: #f3e8ff;
+    color: #7e22ce;
+}
+
 .modal .modal-meta .label.priority {
     background: #fef9c3;
     color: #854d0e;
@@ -557,6 +558,7 @@ body {
     border-left: 3px solid #dbeafe;
 }
 
+/* Style links within description */
 .modal .modal-description a {
     color: #1d4ed8;
     text-decoration: underline;
@@ -567,15 +569,12 @@ body {
     color: #1e40af;
 }
 
-/* NEW: flexible links container */
-.modal .modal-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+/* ----- legacy product link (kept for backwards compatibility) ----- */
+.modal .modal-link {
     margin-top: 4px;
 }
 
-.modal .modal-links a {
+.modal .modal-link a {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -589,12 +588,12 @@ body {
     transition: background 0.15s ease, color 0.15s ease;
 }
 
-.modal .modal-links a:hover {
+.modal .modal-link a:hover {
     background: #dbeafe;
     color: #1e40af;
 }
 
-.modal .modal-links a svg {
+.modal .modal-link a svg {
     width: 18px;
     height: 18px;
 }
@@ -678,9 +677,8 @@ body {
         padding: 10px 12px 12px;
     }
 
-        .item-card .card-title {
+    .item-card .card-title {
         font-size: 13px;
-        min-height: 34px;   /* 2 lines × 13px × 1.3 line-height */
     }
 
     .item-card .card-price {
@@ -693,9 +691,8 @@ body {
     }
 
     .item-card .bought-ribbon span {
-        font-size: 10.5px;
+        font-size: 9px;
         letter-spacing: 0.035em;
-        padding: 0 16px;
     }
 
     .modal .modal-content {

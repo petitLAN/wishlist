@@ -1,0 +1,89 @@
+[
+  {
+    "id": 1,
+    "title": "Laptop Scherm",
+    "price": {
+      "type": "range",
+      "min": 80,
+      "max": 120
+    },
+    "category": "",
+    "sellers": ["AliExpress", "Ebay"],
+    "description": "Het gaat om de MSI Raider GE66 10SGS laptop. Dit scherm en de deksel zijn gebroken. <br/><br/>1920p x 1080p<br/>240Hz <br/>FHD IPS <br/>240Hz <br/>15.6inch <br/>non-touch screen <br/>40pin connector <br/><br/>🔗 <a href=\"https://www.ebay.com/itm/267236183449\" target=\"_blank\">Ebay</a> · <a href=\"https://fr.aliexpress.com/item/1005011979438099.html\" target=\"_blank\">Aliexpress 1</a> · <a href=\"https://fr.aliexpress.com/item/1005006384128735.html\" target=\"_blank\">Aliexpress 2</a> · <a href=\"https://fr.aliexpress.com/item/1005009123121205.html\" target=\"_blank\">Aliexpress 3</a>",
+    "images": [
+      "GE66_Raider_LCD.jpg",
+      "GE66_Raider_Requirements.jpg",
+      "GE66_Raider_Connector.jpg",
+      "GE66_Raider.jpg"
+    ],
+    "links": [
+      { "title": "MSI Specification", "url": "https://www.msi.com/Laptop/GE66-Raider-10SX/Specification" }
+    ],
+    "dateAdded": "2026-01-20",
+    "priority": 5,
+    "bought": false
+  },
+  {
+    "id": 2,
+    "title": "Laptop Deksel",
+    "price": {
+      "type": "range",
+      "min": 30,
+      "max": 50
+    },
+    "category": "",
+    "sellers": ["AliExpress"],
+    "description": "Het gaat om de MSI Raider GE66 10SGS laptop. Deze deksel en het scherm zijn gebroken. <br/><br/>\uD83D\uDD17 <a href=\"https://fr.aliexpress.com/item/1005012422315309.html\" target=\"_blank\">Aliexpress 1</a> · <a href=\"https://fr.aliexpress.com/item/1005010763675545.html\" target=\"_blank\">Aliexpress 2</a> · <a href=\"https://fr.aliexpress.com/item/1005012741733299.html\" target=\"_blank\">Aliexpress 3</a> · <a href=\"https://fr.aliexpress.com/item/1005012427215467.html\" target=\"_blank\">Aliexpress 4</a>",
+    "images": ["GE66_Raider_Lid.jpg","GE66_Raider_Color.jpg","GE66_Raider_Lid2.jpg"],
+    "links": [
+      { "title": "MSI Specification", "url": "https://www.msi.com/Laptop/GE66-Raider-10SX/Specification" }
+    ],
+    "dateAdded": "2026-01-12",
+    "priority": 4,
+    "bought": false
+  },
+  {
+    "id": 3,
+    "title": "Speed Pedelec",
+    "price": {
+      "type": "estimate",
+      "value": 700
+    },
+    "category": "Birthday",
+    "sellers": ["Decathlon"],
+    "description": "Snelle sportieve elektrische fiets, die lekker snel kan.",
+    "images": ["Speed_Pedelec.jpg"],
+
+    "dateAdded": "2025-09-15",
+    "priority": 2,
+    "bought": false
+  },
+  {
+    "id": 4,
+    "title": "Hardeschijf 24TB",
+    "price": {
+      "type": "estimate",
+      "value": 700
+    },
+    "category": "",
+    "sellers": ["Amazon"],
+    "description": "24TB HDD van minstens de merken: <br/>Seagate<br/>Western Digital<br/>",
+    "images": ["hdd.jpg", "hdd_wd.jpg", "hdd_seagate.png"],
+    "dateAdded": "2026-09-05",
+    "priority": 4,
+    "bought": false
+  },
+  {
+    "id": 5,
+    "title": "Anbernic RG35xxSP",
+    "price": 75.0,
+    "category": "Birthday",
+    "sellers": ["Anbernic"],
+    "description": "Retro Handheld",
+    "images": ["handheld.jpg"],
+    "dateAdded": "2026-04-23",
+    "dateBought": "2026-04-23",
+    "priority": 4,
+    "bought": true
+  }
+]

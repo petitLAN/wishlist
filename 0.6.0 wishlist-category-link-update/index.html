@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Wishlist</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="page-header">
+        <div>
+            <h1>✨ My wishlist</h1>
+            <div class="subhead">
+                Things I’d love to get &nbsp;·&nbsp; <span>Ideas, finds &amp; future purchases</span>
+            </div>
+        </div>
+        <div class="subhead" style="font-size:14px;">
+            <span id="totalCount">0</span> items
+        </div>
+    </header>
+
+    <!-- MAIN APP -->
+    <div class="app">
+
+        <!-- ITEM GRID -->
+        <section class="item-grid" id="itemGrid" role="list">
+            <!-- rendered by JS -->
+        </section>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar" role="complementary">
+
+            <!-- Filter: Category (dynamically populated) -->
+            <div class="filter-group">
+                <span class="group-label">Category</span>
+                <div class="filter-options" id="categoryFilters">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Filter: Sellers (dynamically populated) -->
+            <div class="filter-group">
+                <span class="group-label">Sellers</span>
+                <div class="filter-options" id="sellerFilters">
+                    <!-- rendered by JS -->
+                </div>
+            </div>
+
+            <!-- Sort -->
+            <div class="filter-group sort-group">
+                <span class="group-label">Sort by</span>
+                <select id="sortSelect">
+                    <option value="date-desc">Added date (newest first)</option>
+                    <option value="date-asc">Added date (oldest first)</option>
+                    <option value="price-asc">Price (low → high)</option>
+                    <option value="price-desc">Price (high → low)</option>
+                    <option value="priority-desc">Priority (highest first)</option>
+                </select>
+            </div>
+
+            <button class="clear-filters" id="clearFilters">Clear all filters</button>
+
+            <div class="results-count" id="resultsCount">Showing 0 items</div>
+        </aside>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
+        <div class="modal">
+            <button class="modal-close" id="modalClose" aria-label="Close details">✕</button>
+            <div class="modal-content" id="modalContent">
+                <!-- populated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>

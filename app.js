@@ -1,5 +1,5 @@
 /**
- * app.js — Moving sale catalog
+ * app.js — Wishlist catalog
  * Fully data-driven: filters and labels are derived from the JSON data.
  * Supports local images, priority rating, "bought" state, and multiple links in description.
  */
@@ -8,7 +8,7 @@
 let items = [];
 let filteredItems = [];
 let activeCategory = 'all';
-let activeCondition = 'all';
+let activeSeller = 'all';
 let currentSort = 'date-desc';
 let currentItemId = null;
 
@@ -22,20 +22,76 @@ const clearFiltersBtn = document.getElementById('clearFilters');
 const resultsCount = document.getElementById('resultsCount');
 const totalCount = document.getElementById('totalCount');
 const categoryFiltersContainer = document.getElementById('categoryFilters');
-const conditionFiltersContainer = document.getElementById('conditionFilters');
+const sellerFiltersContainer = document.getElementById('sellerFilters');
 
 // ----- helpers --------------------------------------------------------
-function getConditionClass(condition) {
-    const map = {
-        'Good': 'condition-good',
-        'Like-new': 'condition-like-new',
-        'Fair': 'condition-fair'
-    };
-    return map[condition] || '';
+
+function getCategoryFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('category');
+}
+
+function updateCategoryInURL(category) {
+    const url = new URL(window.location.href);
+
+    if (!category || category === 'all') {
+        url.searchParams.delete('category');
+    } else {
+        url.searchParams.set('category', category);
+    }
+
+    // Keep the shareable URL in sync without reloading the page.
+    window.history.replaceState({}, '', url);
+}
+
+function applyCategoryFromURL() {
+    const requestedCategory = getCategoryFromURL();
+    if (!requestedCategory) {
+        activeCategory = 'all';
+        return;
+    }
+
+    // Match case-insensitively, but keep the category spelling from data.json.
+    const categories = getUniqueValues('category');
+    const matchedCategory = categories.find(
+        category => category.toLowerCase() === requestedCategory.toLowerCase()
+    );
+
+    activeCategory = matchedCategory || 'all';
+
+    // Normalize a valid URL to the exact category spelling used by the data.
+    if (matchedCategory) updateCategoryInURL(matchedCategory);
 }
 
 function formatPrice(price) {
-    return 'CHF ' + price.toFixed(2);
+    return '€ ' + price.toFixed(2);
+}
+
+function parseLocalDate(dateString) {
+    if (!dateString) return null;
+    const parts = dateString.split('-').map(Number);
+    if (parts.length !== 3 || parts.some(Number.isNaN)) return null;
+    return new Date(parts[0], parts[1] - 1, parts[2]);
+}
+
+function formatBoughtDate(dateString) {
+    const boughtDate = parseLocalDate(dateString);
+    if (!boughtDate) return 'Bought';
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    boughtDate.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.round((today - boughtDate) / 86400000);
+
+    if (diffDays === 0) return 'Bought today';
+    if (diffDays === 1) return 'Bought yesterday';
+    if (diffDays === 2) return 'Bought two days ago';
+
+    const day = String(boughtDate.getDate()).padStart(2, '0');
+    const month = String(boughtDate.getMonth() + 1).padStart(2, '0');
+    const year = boughtDate.getFullYear();
+    return `Bought ${day}/${month}/${year}`;
 }
 
 function getPriorityStars(priority) {
@@ -130,7 +186,14 @@ function sanitizeHTML(html) {
 function getUniqueValues(key) {
     const values = new Set();
     items.forEach(item => {
-        if (item[key]) values.add(item[key]);
+        const value = item[key];
+        if (Array.isArray(value)) {
+            value.forEach(v => {
+                if (v) values.add(v);
+            });
+        } else if (value) {
+            values.add(value);
+        }
     });
     return Array.from(values).sort();
 }
@@ -138,7 +201,8 @@ function getUniqueValues(key) {
 // ----- build filter buttons --------------------------------------------
 function buildFilterButtons(container, filterKey, activeValue) {
     const values = getUniqueValues(filterKey);
-    let html = `<button class="filter-btn active" data-filter="${filterKey}" data-value="all">All</button>`;
+    const allActive = activeValue === 'all' ? 'active' : '';
+    let html = `<button class="filter-btn ${allActive}" data-filter="${filterKey}" data-value="all">All</button>`;
     values.forEach(val => {
         const isActive = activeValue === val ? 'active' : '';
         html += `<button class="filter-btn ${isActive}" data-filter="${filterKey}" data-value="${val}">${val}</button>`;
@@ -157,8 +221,9 @@ function buildFilterButtons(container, filterKey, activeValue) {
 
             if (key === 'category') {
                 activeCategory = value;
-            } else if (key === 'condition') {
-                activeCondition = value;
+                updateCategoryInURL(activeCategory);
+            } else if (key === 'sellers') {
+                activeSeller = value;
             }
             applyFiltersAndSort();
         });
@@ -174,29 +239,38 @@ function renderGrid() {
     }
 
     let html = '';
+    let hasRenderedAvailableItem = false;
+    let boughtSectionStarted = false;
+
     for (const item of filteredItems) {
-        const firstImg = item.images && item.images.length > 0 ? item.images[0] : '';
-        const condClass = getConditionClass(item.condition);
-        const emoji = getEmojiForItem(item.title);
-        const priorityStars = getPriorityStars(item.priority);
         const isBought = item.bought === true;
 
+        // Force bought items onto a fresh grid row, with a subtle visual break.
+        if (isBought && hasRenderedAvailableItem && !boughtSectionStarted) {
+            html += '<div class="bought-row-break" aria-hidden="true"></div>';
+            boughtSectionStarted = true;
+        }
+
+        if (!isBought) hasRenderedAvailableItem = true;
+        const firstImg = item.images && item.images.length > 0 ? item.images[0] : '';
+        const emoji = getEmojiForItem(item.title);
+        const priorityStars = getPriorityStars(item.priority);
         // Build card
         let cardClasses = 'item-card';
         if (isBought) cardClasses += ' bought';
 
         html += `
                 <div class="${cardClasses}" data-id="${item.id}" role="listitem">
-                    ${isBought ? '<div class="bought-badge">BOUGHT</div>' : ''}
+                    ${isBought ? `<div class="bought-ribbon"><span>${formatBoughtDate(item.dateBought)}</span></div>` : ''}
                     <div class="card-image">
                         ${firstImg ? `<img src="${firstImg}" alt="${item.title}" loading="lazy" />` : `<span style="font-size:56px;">${emoji}</span>`}
                     </div>
                     <div class="card-body">
                         <div class="card-title">${item.title}</div>
-                        <div class="card-price">${formatPrice(item.price)} <small>CHF</small></div>
+                        <div class="card-price">${formatPrice(item.price)}</div>
                         <div class="card-labels">
                             <span class="label category">${item.category}</span>
-                            <span class="label ${condClass}">${item.condition}</span>
+                            ${(item.sellers || []).map(seller => `<span class="label seller">${seller}</span>`).join('')}
                             ${item.priority ? `<span class="label priority">${priorityStars}</span>` : ''}
                         </div>
                     </div>
@@ -219,14 +293,14 @@ function renderGrid() {
 
 // ----- filtering & sorting --------------------------------------------
 function applyFiltersAndSort() {
-    // First filter by category and condition
+    // First filter by category and seller
     let result = [...items];
 
     if (activeCategory !== 'all') {
         result = result.filter(item => item.category === activeCategory);
     }
-    if (activeCondition !== 'all') {
-        result = result.filter(item => item.condition === activeCondition);
+    if (activeSeller !== 'all') {
+        result = result.filter(item => (item.sellers || []).includes(activeSeller));
     }
 
     // Split into active and bought
@@ -265,7 +339,6 @@ function openModal(id) {
     if (!item) return;
 
     currentItemId = id;
-    const condClass = getConditionClass(item.condition);
     const images = item.images || [];
     const priorityStars = getPriorityStars(item.priority);
     const isBought = item.bought === true;
@@ -285,7 +358,7 @@ function openModal(id) {
         thumbsHtml = '<span style="font-size:14px;color:#94a3b8;">No additional images</span>';
     }
 
-    const boughtLabel = isBought ? '<span class="label bought-status">Bought</span>' : '';
+    const boughtLabel = isBought ? `<span class="label bought-status">${formatBoughtDate(item.dateBought)}</span>` : '';
 
     // Sanitize description to allow safe HTML (links, etc.)
     const safeDescription = item.description ? sanitizeHTML(item.description) : 'No description available.';
@@ -301,11 +374,11 @@ function openModal(id) {
             </div>
 
             <div class="modal-title">${item.title}</div>
-            <div class="modal-price">${formatPrice(item.price)} <small>CHF</small></div>
+            <div class="modal-price">${formatPrice(item.price)}</div>
 
             <div class="modal-meta">
                 <span class="label category">${item.category}</span>
-                <span class="label ${condClass}">${item.condition}</span>
+                ${(item.sellers || []).map(seller => `<span class="label seller">${seller}</span>`).join('')}
                 ${item.priority ? `<span class="label priority">${priorityStars}</span>` : ''}
                 ${boughtLabel}
             </div>
@@ -354,19 +427,26 @@ async function loadData() {
         if (!response.ok) throw new Error('Failed to load data.json');
         items = await response.json();
 
-        // ensure each item has an id, images array, dateAdded, and bought default
+        // ensure each item has an id, images array, dateAdded, bought default, and optional dateBought
         items.forEach((item, index) => {
             if (!item.id) item.id = index + 1;
             if (!item.images) item.images = [];
             if (!item.dateAdded) item.dateAdded = new Date().toISOString().split('T')[0];
             if (item.bought === undefined) item.bought = false;
+            if (!item.bought) item.dateBought = null;
+            // sellers can contain one or more labels; normalize legacy/string values to an array
+            if (!item.sellers) item.sellers = [];
+            if (!Array.isArray(item.sellers)) item.sellers = [item.sellers];
             // prepend "images/" to each image filename (if not already a URL)
             item.images = item.images.map(img => img.startsWith('http') || img.startsWith('data:') ? img : `images/${img}`);
         });
 
+        // Apply a shareable category from the URL, e.g. ?category=Electronics
+        applyCategoryFromURL();
+
         // build dynamic filters
         buildFilterButtons(categoryFiltersContainer, 'category', activeCategory);
-        buildFilterButtons(conditionFiltersContainer, 'condition', activeCondition);
+        buildFilterButtons(sellerFiltersContainer, 'sellers', activeSeller);
 
         // initial render
         applyFiltersAndSort();
@@ -391,12 +471,13 @@ clearFiltersBtn.addEventListener('click', () => {
     const allCat = categoryFiltersContainer.querySelector('.filter-btn[data-value="all"]');
     if (allCat) allCat.classList.add('active');
     activeCategory = 'all';
+    updateCategoryInURL(activeCategory);
 
-    // reset condition
-    conditionFiltersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    const allCond = conditionFiltersContainer.querySelector('.filter-btn[data-value="all"]');
-    if (allCond) allCond.classList.add('active');
-    activeCondition = 'all';
+    // reset seller
+    sellerFiltersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    const allSeller = sellerFiltersContainer.querySelector('.filter-btn[data-value="all"]');
+    if (allSeller) allSeller.classList.add('active');
+    activeSeller = 'all';
 
     // reset sort
     sortSelect.value = 'date-desc';

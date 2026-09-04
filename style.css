@@ -1,5 +1,5 @@
 /* ----------------------------------------------
-   style.css — moving sale catalog
+   style.css — wishlist catalog
    ---------------------------------------------- */
 
 /* ----- reset & base ----- */
@@ -72,6 +72,14 @@ body {
     gap: 20px;
 }
 
+/* Full-width break that keeps purchased items on their own row. */
+.bought-row-break {
+    grid-column: 1 / -1;
+    height: 1px;
+    margin: 8px 0 2px;
+    background: #e2e8f0;
+}
+
 /* ----- card ----- */
 .item-card {
     background: #ffffff;
@@ -94,9 +102,19 @@ body {
 
 /* ----- bought state ----- */
 .item-card.bought {
-    opacity: 0.7;
+    opacity: 1;
     border-color: #d1d5db;
-    filter: grayscale(0.3);
+}
+
+.item-card.bought .card-image {
+    filter: grayscale(0.4);
+    opacity: 0.62;
+}
+
+.item-card.bought .card-title,
+.item-card.bought .card-price,
+.item-card.bought .card-labels {
+    opacity: 0.62;
 }
 
 .item-card.bought:hover {
@@ -104,20 +122,37 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
-.item-card .bought-badge {
+/* Diagonal SOLD-style ribbon for purchased wishlist items.
+   Oversized on purpose so it crosses the whole article frame and leaves
+   enough room for longer date wording such as “BOUGHT TWO DAYS AGO”. */
+.item-card .bought-ribbon {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 48%;
+    left: 50%;
+    width: 190%;
+    padding: 9px 0;
     background: #ef4444;
     color: #fff;
-    font-size: 12px;
-    font-weight: 700;
+    text-align: center;
+    transform: translate(-50%, -50%) rotate(-27deg);
+    transform-origin: center;
+    box-shadow: 0 3px 10px rgba(127, 29, 29, 0.24);
+    z-index: 3;
+    pointer-events: none;
+}
+
+.item-card .bought-ribbon span {
+    display: block;
+    width: 100%;
+    padding: 0 18px;
+    font-size: 10.5px;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 4px 12px;
-    border-radius: 20px;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-    z-index: 2;
+    letter-spacing: 0.055em;
+    white-space: nowrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.55);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+    line-height: 1.75;
 }
 
 .item-card .card-image {
@@ -196,19 +231,9 @@ body {
     color: #1d4ed8;
 }
 
-.item-card .card-labels .label.condition-good {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.item-card .card-labels .label.condition-like-new {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-.item-card .card-labels .label.condition-fair {
-    background: #fef3c7;
-    color: #b45309;
+.item-card .card-labels .label.seller {
+    background: #f3e8ff;
+    color: #7e22ce;
 }
 
 .item-card .card-labels .label.priority {
@@ -505,19 +530,9 @@ body {
     color: #1d4ed8;
 }
 
-.modal .modal-meta .label.condition-good {
-    background: #dcfce7;
-    color: #15803d;
-}
-
-.modal .modal-meta .label.condition-like-new {
-    background: #dbeafe;
-    color: #1d4ed8;
-}
-
-.modal .modal-meta .label.condition-fair {
-    background: #fef3c7;
-    color: #b45309;
+.modal .modal-meta .label.seller {
+    background: #f3e8ff;
+    color: #7e22ce;
 }
 
 .modal .modal-meta .label.priority {
@@ -528,7 +543,7 @@ body {
 .modal .modal-meta .label.bought-status {
     background: #fee2e2;
     color: #b91c1c;
-    text-transform: uppercase;
+    text-transform: none;
     font-weight: 700;
 }
 
@@ -599,6 +614,7 @@ body {
 
     .sidebar {
         position: static;
+        order: -1;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px 24px;
@@ -667,6 +683,16 @@ body {
 
     .item-card .card-price {
         font-size: 17px;
+    }
+
+    .item-card .bought-ribbon {
+        width: 210%;
+        top: 47%;
+    }
+
+    .item-card .bought-ribbon span {
+        font-size: 9px;
+        letter-spacing: 0.035em;
     }
 
     .modal .modal-content {
